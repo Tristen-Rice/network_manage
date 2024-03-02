@@ -1,167 +1,164 @@
-# 网络资产管理
-### Python安装
+# Network Asset Management
 
-```
-wget https://www.python.org/ftp/python/3.6.11/Python-3.6.11.tgz
-tar -xf Python-3.6.11.tgz
-cd Python-3.6.11
-./configure --prefix=/usr/local/python36
+## Python Installation
+
+```bash
+wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
+tar -xf Python-3.9.10.tgz
+cd Python-3.9.10
+./configure --prefix=/usr/local/python39
 make && make install
-ln -s /usr/local/python36/bin/python3 /usr/bin/python3
-ln -s /usr/local/python36/bin/pip3 /usr/bin/pip3
+ln -s /usr/local/python39/bin/python3 /usr/bin/python3
+ln -s /usr/local/python39/bin/pip3 /usr/bin/pip3
 ```
 
-### Python虚拟环境安装
+## Python Virtual Environment Installation
 
-- 安装virtualenv virtualenvwrapper
+- Install `virtualenv` and `virtualenvwrapper`:
 
-```
-pip3 install virtualenv virtualenvwrapper
-ln -s /usr/local/python36/bin/virtualenvwrapper.sh /usr/bin/virtualenvwrapper.sh
-ln -s /usr/local/python36/bin/virtualenv /usr/bin/virtualenv
-```
+  ```bash
+  pip3 install virtualenv virtualenvwrapper
+  ln -s /usr/local/python39/bin/virtualenvwrapper.sh /usr/bin/virtualenvwrapper.sh
+  ln -s /usr/local/python39/bin/virtualenv /usr/bin/virtualenv
+  ```
 
-- 在~/.bashrc中添加行：
+- Add the following lines to `~/.bashrc`:
 
-```
-export WORKON_HOME=$HOME/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-source /usr/bin/virtualenvwrapper.sh
-```
+  ```bash
+  export WORKON_HOME=$HOME/.virtualenvs
+  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+  source /usr/bin/virtualenvwrapper.sh
+  ```
 
-- 创建指定版本的虚拟环境
+- Create a virtual environment with a specified version:
 
-```
-mkvirtualenv -p /usr/bin/python3 network_manage
-```
+  ```bash
+  mkvirtualenv -p /usr/bin/python3 network_manage
+  ```
 
-- **退出虚拟环境**
+- **Exit virtual environment**:
 
-```
-deactivate
-```
+  ```bash
+  deactivate
+  ```
 
-- **删除虚拟环境**
+- **Delete virtual environment**:
 
-```
-rmvirtualenv network_manage
-```
+  ```bash
+  rmvirtualenv network_manage
+  ```
 
-### Postgres数据库初始化
+## Postgres Database Initialization
 
-```
-# 新建数据库文件
-mkdir /usr/local/network_manage/
-# 修改文件所属组
-chown postgres:postgres /usr/local/network_manage/
-# 初始化数据库文件
-su - postgres -c "initdb -D /usr/local/network_manage/"
-```
+- Create a new database directory:
 
-基于网络探测和交换机探测网络，管理IP资产
+  ```bash
+  mkdir /usr/local/network_manage/
+  ```
 
-### 环境部署
+- Change the directory's owner group:
 
-- Python 3.6+
-- Django 2.2
-- React 16.11
+  ```bash
+  chown postgres:postgres /usr/local/network_manage/
+  ```
 
-#### 后台环境部署
+- Initialize the database directory:
 
-1. 安装基础依赖包，进入network_manage_api执行：
+  ```bash
+  su - postgres -c "initdb -D /usr/local/network_manage/"
+  ```
 
-```
-pip install -r requirements.txt 
-```
+Based on network detection and switch detection to manage IP assets.
 
-2. Django数据库配置：
+## Environment Deployment
 
-```
+- Python 3.9+
+- Django 3.2
+- React 17.0
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'device_query',
-        'USER': 'root',
-        'PASSWORD': '*****',
-        'HOST': '127.0.0.1',
-        'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0;",
-        },
-    }
-}
-```
+### Backend Environment Deployment
 
-**注意需要在数据库先新建数据库:`create database device_query`**
+1. Install the basic dependency packages, enter `network_manage_api` and execute:
 
-3. 环境配置：
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```python
-# redis对应得配置文件
-REDIS_CONF:
-  host: 127.0.0.1
-  password: 123456789
-  port: 4580
-# redis里面缓存设备探测信息得队列
-DEVICE_QUERY_QUEUE: "device:query:queue"
-# redis里面缓存设备探测定时任务的哈希
-DEVICE_QUETY_CRONTAB_HASH: "device:crontab:task:time"
+2. Django database configuration:
 
-# 服务安装路径
-SERVICE_INSTALL_PATH: "/opt/network_manage/"
+   ```python
+   DATABASES = {
+       'default': {
+           'ENGINE': 'django.db.backends.mysql',
+           'NAME': 'device_query',
+           'USER': 'root',
+           'PASSWORD': '*****',
+           'HOST': '127.0.0.1',
+           'OPTIONS': {
+               "init_command": "SET foreign_key_checks = 0;",
+           },
+       }
+   }
+   ```
 
-# 脚本安装目录
-SCRIPT_PATH:
-  DEVICE_QUERY_CRON_PATH: "/opt/network_manage/bin/device_query_cron.py"
+   **Note: You need to create a new database in the database first:** `create database device_query`
 
-# 日志配置
-LOG_SETUP:
-  LOG_FORMAT: "%(asctime)s %(name)s %(levelname)s %(filename)s %(message)s"
-  DATE_FORMAT: "%Y-%m-%d  %H:%M:%S"
-  SERVICE_MONITOR_PATH: "/opt/network_manage/log/serviceMonitor.log"
-```
+3. Environment configuration:
 
-4. 启动Django服务：
+   ```python
+   REDIS_CONF = {
+     'host': '127.0.0.1',
+     'password': '123456789',
+     'port': 6379
+   }
+   DEVICE_QUERY_QUEUE = "device:query:queue"
+   DEVICE_QUERY_CRONTAB_HASH = "device:crontab:task:time"
+   SERVICE_INSTALL_PATH = "/opt/network_manage/"
+   SCRIPT_PATH = {
+     'DEVICE_QUERY_CRON_PATH': "/opt/network_manage/bin/device_query_cron.py"
+   }
+   LOG_SETUP = {
+     'LOG_FORMAT': "%(asctime)s %(name)s %(levelname)s %(filename)s %(message)s",
+     'DATE_FORMAT': "%Y-%m-%d  %H:%M:%S",
+     'SERVICE_MONITOR_PATH': "/opt/network_manage/log/serviceMonitor.log"
+   }
+   ```
 
-```
-python manage.py makemigrations 
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
-```
+4. Start the Django service:
 
-5. 在定时任务中开启服务监控
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py runserver 0.0.0.0:8000
+   ```
 
-```
-*/1 * * * * /opt/network_manage/bin/service_monitor.sh >>/dev/null 2>&1
-```
+5. Enable service monitoring in the cron job:
 
-#### 前台环境部署
+   ```bash
+   */1 * * * * /opt/network_manage/bin/service_monitor.sh >>/dev/null 2>&1
+   ```
 
-1. 安装npm环境，自行百度安装
-2. npm一键安装package.json里的所有依赖文件
+### Frontend Environment Deployment
 
-```
-npm install
-```
+1. Install the npm environment, search online for installation instructions.
+2. Install all dependencies listed in `package.json` with one command:
 
-3. 启动npm服务
+   ```bash
+   npm install
+   ```
 
-```
-npm run start
-```
+3. Start the npm service:
 
-### 实现功能
+   ```bash
+   npm run start
+   ```
 
-------
+## Implemented Features
 
-- **设备探测**：支持交换机包括华为、华三、锐捷、思科、迈普（待实现)、中兴（待实现），支持自定义配置探测任务
-- **终端远程登陆**：支持ssh和telnet两种方式
-- **网络探测**：待实现
+- **Device Detection**: Supports switches including Huawei, H3C, Ruijie, Cisco, Maipu (to be implemented), ZTE (to be implemented), and supports custom configuration of detection tasks.
+- **Remote Terminal Login**: Supports both ssh and telnet methods.
+- **Network Detection**: To be implemented.
+- **Network Management**: To be implemented.
+- **MAC Management**: To be implemented.
 
-- **网络管理**：待实现
-- **MAC管理**：待实现
-
-### 主要功能实现展示
-
-
-
+## Main Features Demonstration
