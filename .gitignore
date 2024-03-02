@@ -1,4 +1,4 @@
-# log 不需要提交的任意包含后缀名为log的文件
+# log files not to be committed
 *.log
 
 # Python:
@@ -9,15 +9,13 @@
 dist
 build
 
-# django配置文件不提交
+# Django configuration files not to be committed
 network_manage_api/network_manage/settings.py
 
-
-# pycharm临时文件
+# PyCharm temporary files
 network_manage_api/.idea/
 */__pycache__
 */migrations/
-
 
 # dependencies
 */node_modules/
